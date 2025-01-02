@@ -1,37 +1,13 @@
-import React ,{ useState, useEffect } from 'react'
+import React ,{ useState } from 'react'
 import { IoMoonOutline, IoSearch } from "react-icons/io5";
 import { FaMoon } from "react-icons/fa";
-
+import data from './assets/data.json'
 import { Link } from "react-router-dom";
-
-const api = "https://restcountries.com/v3.1/all"
 
 const Home = () => {
     const [dark, setDark] = React.useState(false);
     const [region, setRegion] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [countries, setCountries] = useState([]); 
-    const [loading, setLoading] = useState(true); 
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-      
-      const fetchCountries = async () => {
-        try {
-          setLoading(true);
-          const response = await fetch(api);
-          if (!response.ok) throw new Error("Failed to fetch countries");
-          const data = await response.json();
-          setCountries(data);
-          setLoading(false);
-        } catch (err) {
-          setError(err.message);
-          setLoading(false);
-        }
-      };
-  
-      fetchCountries();
-    }, []);
   
     const handleRegionChange = (event) => {
       setRegion(event.target.value);
@@ -50,7 +26,7 @@ const Home = () => {
       return new Intl.NumberFormat("en-US").format(population);
     };
   
-    const filteredData = countries.filter((country) => {
+    const filteredData = data.filter((country) => {
       const matchesRegion = region ? country.region === region : true;
       const matchesSearch = searchQuery
         ? country.name.toLowerCase().includes(searchQuery)
@@ -59,7 +35,7 @@ const Home = () => {
     });
   
     return (
-      <div className='w-full h-screen dark:bg-VeryDarkBlue dark:text-white font-NunitoSans'>
+      <div className='w-full h-screen dark:text-white font-NunitoSans'>
         <div className="w-full h-[8vh] fixed top-0 px-5 laptop:px-20 bg-white dark:bg-DarkBlue border-b-2 dark:border-VeryDarkBlue flex justify-between items-center">
           <h1 className='text-[20px] font-bold'>Where in the world?</h1>
           <div className='flex items-center gap-2 cursor-pointer' onClick={darkModeHandler}>
@@ -98,42 +74,19 @@ const Home = () => {
         </div>
   
         <div className="laptop:px-20 laptop:grid laptop:grid-cols-4 laptop:gap-6 dark:bg-VeryDarkBlue">
-          {loading ? (
-            <p className="text-center">Loading...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : filteredData.length > 0 ? (
-            filteredData.map((country, index) => (
-              <div
-                key={index}
-                className="w-[70%] laptop:w-[90%] mx-auto my-10 dark:bg-DarkBlue hover:scale-110 duration-500 shadow-lg rounded-md overflow-hidden cursor-pointer"
-              >
-                <Link to={`/country/${encodeURIComponent(country.name.common)}`}>
-                  <img
-                    src={country.flags.png}
-                    alt={country.name.common}
-                    className="w-full h-40 object-cover"
-                  />
+          {filteredData.map((country, index) => (
+            <div key={index} className="w-[70%] laptop:w-[90%] mx-auto my-10 dark:bg-DarkBlue hover:scale-110 duration-500 shadow-lg rounded-md overflow-hidden cursor-pointer">
+                <Link to={`/country/${encodeURIComponent(country.name)}`} >
+                  <img src={country.flags.png} alt={country.name} className="w-full h-40 object-cover" />
                   <div className="px-7 py-8">
-                    <h2 className="mb-5 font-bold text-[20px]">{country.name.common}</h2>
-                    <p>
-                      <span className="font-bold">Population:</span>{" "}
-                      {formatPopulation(country.population)}
-                    </p>
-                    <p className="my-1">
-                      <span className="font-bold">Region:</span> {country.region}
-                    </p>
-                    <p>
-                      <span className="font-bold">Capital:</span>{" "}
-                      {country.capital?.[0] || "No Capital"}
-                    </p>
+                    <h2 className="mb-5 font-bold text-[20px]">{country.name}</h2>
+                    <p><span className='font-semibold'>Population:</span> {formatPopulation(country.population)}</p>
+                    <p className='my-1'><span className='font-semibold'>Region:</span> {country.region}</p>
+                    <p><span className='font-semibold'>Capital:</span> {country.capital}</p>
                   </div>
                 </Link>
-              </div>
-            ))
-          ) : (
-            <p className="text-center">No countries found</p>
-          )}
+            </div>
+          ))}
         </div>
       </div>
     )
