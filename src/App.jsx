@@ -7,7 +7,7 @@ import Country from "./Country";
 function App() {
 
   return (
-    <Router>
+    <Router basename='/'>
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/country/:name' element={<Country />} />
