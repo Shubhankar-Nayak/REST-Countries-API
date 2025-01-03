@@ -1,6 +1,7 @@
 import React ,{ useState, useEffect } from 'react'
 import { IoMoonOutline, IoSearch } from "react-icons/io5";
 import { FaMoon } from "react-icons/fa";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 import { Link } from "react-router-dom";
 
@@ -13,6 +14,7 @@ const Home = () => {
     const [countries, setCountries] = useState([]); 
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
       
@@ -34,7 +36,8 @@ const Home = () => {
     }, []);
   
     const handleRegionChange = (event) => {
-      setRegion(event.target.value);
+      setRegion(event);
+      setIsOpen(false);
     };
   
     const darkModeHandler = () => {
@@ -53,14 +56,14 @@ const Home = () => {
     const filteredData = countries.filter((country) => {
       const matchesRegion = region ? country.region === region : true;
       const matchesSearch = searchQuery
-        ? country.name.toLowerCase().includes(searchQuery)
+        ? country.name.common.toLowerCase().includes(searchQuery)
         : true;
       return matchesRegion && matchesSearch;
     });
   
     return (
       <div className='w-full h-screen dark:bg-VeryDarkBlue dark:text-white font-NunitoSans'>
-        <div className="w-full h-[8vh] fixed top-0 px-5 laptop:px-20 bg-white dark:bg-DarkBlue border-b-2 dark:border-VeryDarkBlue flex justify-between items-center">
+        <div className="w-full h-[8vh] fixed z-50 top-0 px-5 laptop:px-20 bg-white dark:bg-DarkBlue border-b-2 dark:border-VeryDarkBlue flex justify-between items-center">
           <h1 className='text-[20px] font-bold'>Where in the world?</h1>
           <div className='flex items-center gap-2 cursor-pointer' onClick={darkModeHandler}>
             { !dark && <IoMoonOutline /> }
@@ -80,20 +83,55 @@ const Home = () => {
               onChange={handleSearchChange} 
             />
           </div>
-          <div className="w-[60%] laptop:w-[20%] dark:bg-DarkBlue ms-10 mt-5 ps-5 bg-white flex items-center shadow-md rounded-md">
-            <select
-              id="region"
-              className="w-full py-3 ms-3 focus:outline-none bg-transparent border-none dark:bg-DarkBlue cursor-pointer"
-              value={region}
-              onChange={handleRegionChange}
+          <div className="relative w-[60%] laptop:w-[20%] ms-10 mt-5 bg-white dark:bg-DarkBlue shadow-md rounded-md cursor-pointer">
+            <div
+              onClick={() => setIsOpen(!isOpen)} 
+              className="py-3 px-5 flex justify-between items-center"
             >
-              <option value="">Filter by Region</option>
-              <option value="Africa">Africa</option>
-              <option value="Americas">America</option>
-              <option value="Asia">Asia</option>
-              <option value="Europe">Europe</option>
-              <option value="Oceania">Oceania</option>
-            </select>
+              <span>{region || "Filter by Region"}</span>
+              <MdOutlineKeyboardArrowDown />
+            </div>
+
+            {isOpen && (
+              <div className="absolute top-14 left-0 w-full bg-white dark:bg-DarkBlue shadow-md rounded-md z-10">
+                <div
+                  onClick={() => handleRegionChange("")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Filter by Region
+                </div>
+                <div
+                  onClick={() => handleRegionChange("Africa")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Africa
+                </div>
+                <div
+                  onClick={() => handleRegionChange("Americas")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  America
+                </div>
+                <div
+                  onClick={() => handleRegionChange("Asia")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Asia
+                </div>
+                <div
+                  onClick={() => handleRegionChange("Europe")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Europe
+                </div>
+                <div
+                  onClick={() => handleRegionChange("Oceania")}
+                  className="py-2 px-5 hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Oceania
+                </div>
+              </div>
+            )}
           </div>
         </div>
   
